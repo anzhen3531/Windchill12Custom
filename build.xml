@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="Customized" basedir="." default="install">
+    <description>Customized Pack Building</description>
+    <property environment="env"/>
+    <property name="base" location="."/>
+    <property name="wthome" location="${env.WT_HOME}"/>
+    <property name="bin" location="${wthome}/bin"/>
+    <property name="codebase" location="${wthome}/codebase"/>
+
+    <path id="project.class.path">
+        <pathelement location="${wthome}/codebase"/>
+        <fileset dir="${wthome}/codebase/WEB-INF/lib" includes="*.jar"/>
+        <fileset dir="${wthome}/lib" includes="*.jar"/>
+        <pathelement path="${wthome}/srclib/wnc/WCA.jar"/>
+    </path>
+
+<!--    <target name="install" depends="check_path,clear,rebuild_custom_bundle,compile_source,registry_merge,install_property_file,make_jar">-->
+    <target name="install" depends="check_path,clear,rebuild_custom_bundle,compile_source,registry_merge,install_property_file,make_jar">
+        <echo>install end...</echo>
+        <!-- <antcall target="install_property_file"/> -->
+        <!-- <antcall target="make_jar"/> -->
+    </target>
+
+    <!-- Clear  -->
+    <target name="clear" depends="check_path">
+        <echo>Clear...</echo>
+        <delete verbose="true" includeEmptyDirs="true">
+            <fileset dir="${wthome}/src/ext" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+        <delete verbose="true" includeEmptyDirs="true">
+            <fileset dir="${wthome}/codebase/ext" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+        <delete verbose="true" includeEmptyDirs="true">
+            <fileset dir="${wthome}/wtCustom/wt" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+        <echo>Delete Cache...</echo>
+        <delete verbose="true" includeemptydirs="true">
+            <fileset dir="${wthome}/codebase/wt/workflow/expr" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+        <delete verbose="true" includeemptydirs="true">
+            <fileset dir="${wthome}/tasks/codebase/com/infoengine" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+        <delete verbose="true" includeemptydirs="true">
+            <fileset dir="${wthome}/tomcat/instances" includes="**/*" erroronmissingdir="false"/>
+        </delete>
+    </target>
+
+    <!-- Copy Files -->
+    <target name="copy_file" depends="check_git_path">
+        <echo>Copy Files</echo>
+        <copy todir="${wthome}/src" overwrite="true">
+            <fileset dir="${wthome}/repository/src">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/src/src_gen" overwrite="true">
+            <fileset dir="${wthome}/repository/src_gen">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/codebase" overwrite="true">
+            <fileset dir="${wthome}/repository/codebase">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/db" overwrite="true">
+            <fileset dir="${wthome}/repository/db">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/loadfiles" overwrite="true">
+            <fileset dir="${wthome}/repository/loadfiles">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/model_registry" overwrite="true">
+            <fileset dir="${wthome}/repository/model_registry">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/wtCustom" overwrite="true">
+            <fileset dir="${wthome}/repository/wtCustom">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+        <copy todir="${wthome}/wtSafeArea" overwrite="true">
+            <fileset dir="${wthome}/repository/wtSafeArea">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!--check_path-->
+    <target name="compile_source" depends="copy_file">
+        <echo>Compile source code to class</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <!--指定编译源码路径-->
+            <arg value="ant -f ${wthome}/bin/tools.xml class -Dclass.includes=&quot;com/ptc/windchill/enterprise/product/**,ext/**,com/ptc/core/components/**&quot; -Dclass.excludes=&quot;**/model/**,**/infomodel/**,**/scenemodel/**&quot;"/>
+        </exec>
+    </target>
+
+    <!-- Rebuild Custom Resource Bundle -->
+    <target name="rebuild_custom_bundle" depends="copy_file">
+        <echo>Building custom resource bundle</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="ant -f ${wthome}/bin/tools.xml bundle_custom"/>
+        </exec>
+    </target>
+
+    <!-- Make Jar -->
+    <target name="make_jar" depends="check_path">
+        <echo>Making Jar files</echo>
+<!--        <exec executable="${shell}" failonerror="true">-->
+<!--            <arg value="${shopt}"/>-->
+<!--            <arg value="ant -f ${wthome}/codebase/MakeJar.xml"/>-->
+<!--        </exec>-->
+        <echo>start server...</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="windchill start"/>
+        </exec>
+    </target>
+
+    <target name="registry_merge" depends="check_path">
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="ant -f ${wthome}/bin/tools.xml registry_merge -Dregistry_merge.adds=${wthome}/model_registry"/>
+        </exec>
+        <echo message="Model Register entry successfully added to related property file"/>
+    </target>
+
+    <!-- Install Custom Property File -->
+    <target name="install_property_file" depends="check_path">
+        <echo>Registering Custom Property File</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="${xconfmanager} -i ${wthome}/codebase/ext/ziang/xconf/ziang_service.xconf -p"/>
+        </exec>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="${xconfmanager} -p"/>
+        </exec>
+    </target>
+
+    <!-- Check OS -->
+    <target name="init_os">
+        <condition property="is_win32">
+            <os family="windows"/>
+        </condition>
+        <condition property="is_unix">
+            <os family="unix"/>
+        </condition>
+    </target>
+
+    <target name="init_win32" depends="init_os" if="is_win32">
+        <echo message="initializing win32 commands"/>
+        <property name="shell" value="cmd.exe"/>
+        <property name="shopt" value="/c"/>
+        <property name="ResourceBuild" value="${wthome}/bin/ResourceBuild.bat"/>
+        <property name="modelInstall" value="${wthome}/bin/modelInstall.bat"/>
+        <property name="xconfmanager" value="${wthome}/bin/xconfmanager.bat"/>
+        <property name="JavaGen" value="${wthome}/bin/JavaGen.bat"/>
+    </target>
+
+    <target name="init_unix" depends="init_os" if="is_unix">
+        <echo message="initializing unix commands"/>
+        <property name="shell" value="/bin/sh"/>
+        <property name="shopt" value="-c"/>
+        <property name="ResourceBuild" value="${wthome}/bin/ResourceBuild.sh"/>
+        <property name="modelInstall" value="${wthome}/bin/modelInstall.sh"/>
+        <property name="xconfmanager" value="${wthome}/bin/xconfmanager"/>
+        <property name="JavaGen" value="${wthome}/bin/JavaGen.sh"/>
+    </target>
+
+    <!-- Check Path -->
+    <target name="check_path" depends="init_win32, init_unix">
+        <echo>stop server...</echo>
+        <exec executable="${shell}" failonerror="false">
+            <arg value="${shopt}"/>
+            <arg value="windchill stop"/>
+        </exec>
+        <condition property="path_correct">
+            <and>
+                <available file="${wthome}/site.xconf"/>
+                <available file="${wthome}/codebase/wt.properties.xconf"/>
+            </and>
+        </condition>
+        <fail message="WT_HOME not correct, should work in windchill shell." unless="path_correct"/>
+    </target>
+
+    <!-- Check git Path -->
+    <target name="check_git_path" depends="check_path">
+        <condition property="git_path_correct">
+            <available file="${wthome}/repository"/>
+        </condition>
+<!--        <antcall target="git_pull">-->
+<!--        </antcall>-->
+<!--        <antcall target="git_clone">-->
+<!--        </antcall>-->
+<!--        <antcall target="git_chekout">-->
+<!--        </antcall>-->
+    </target>
+    <target name="git_chekout">
+        <echo>pull latest code from git</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="git -C repository checkout master"/>
+        </exec>
+    </target>
+    <target name="git_pull" if="git_path_correct">
+        <echo>pull latest code from git</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="git -C repository pull"/>
+        </exec>
+    </target>
+    <target name="git_clone" unless="git_path_correct">
+        <echo>clone from git first</echo>
+        <exec executable="${shell}" failonerror="true">
+            <arg value="${shopt}"/>
+            <arg value="git clone git@github.com:anzhen3531/BOM-manager.git repository"/>
+        </exec>
+    </target>
+
+</project>
