@@ -38,6 +38,32 @@
     %>
 
 
+    <script type="text/javascript">
+        function resizeIframe() {
+            var height = 0;
+            console.log(window.innerHeight);
+
+            if (window.innerHeight) {
+                height = window.innerHeight;
+            } else if (document.documentElement && document.documentElement.clientHeight) {
+                height = document.documentElement.clientHeight;
+            } else if (document.body) {
+                height = document.body.clientHeight;
+            }
+            height -= document.getElementById('outerframe').offsetTop;
+            console.log(" document.getElementById('outerframe').offsetTop" + document.getElementById('outerframe').offsetTop);
+            if (document.getElementById('outerframe').offsetTop == 0) {
+                height -= 200;
+            } else {
+                height -= 10;
+            }
+
+            console.log(height);
+            document.getElementById('outerframe').style.height = height + "px";
+
+        }
+    </script>
+
     <%-- There are two steps to render a custom activity variable on the task page.
 
     1) Place the name of the activity variable that you want to display on the
@@ -61,7 +87,7 @@
     <tags:workItemInfo custom_variables="all_activity_variables"/>
     <BR>
 
-
+    <%--    信息展示 div --%>
     <div>
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
@@ -179,11 +205,14 @@
                             </tr>
                             <tr>
                                 <td></td>
-                                <td></td>
                                 <td valign="middle" align="left">
-                                    <FONT class=wizardbuttonfont>
                                         <jsp:include page="/netmarkets/jsp/customtemplates/completeButton.jsp"/>
-                                    </FONT>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td valign="middle" colspan="3">
+                                    <hr size="1" width="100%">
                                 </td>
                             </tr>
 
@@ -200,6 +229,7 @@
         </table>
     </div>
 
+    <%--  流程地图  --%>
     <div>
         <iframe width="100%" height="100%" marginheight="100%" onload="resizeIframe()"
                 frameborder="0" id="outerframe" src=<%=processManagerUrl%>>
@@ -219,34 +249,11 @@
         <!-- displayType options are "table" or "link".  This tag only works when PBO implements interface SubjectOfForum -->
             <%--<workItem:discussions displayType="table"/>--%>
     </div>
+
     <BR>
 </c:if>
 
-<script type="text/javascript">
-    function resizeIframe() {
-        var height = 0;
-        console.log(window.innerHeight);
 
-        if (window.innerHeight) {
-            height = window.innerHeight;
-        } else if (document.documentElement && document.documentElement.clientHeight) {
-            height = document.documentElement.clientHeight;
-        } else if (document.body) {
-            height = document.body.clientHeight;
-        }
-        height -= document.getElementById('outerframe').offsetTop;
-        console.log(" document.getElementById('outerframe').offsetTop" + document.getElementById('outerframe').offsetTop);
-        if (document.getElementById('outerframe').offsetTop == 0) {
-            height -= 200;
-        } else {
-            height -= 10;
-        }
 
-        console.log(height);
-        document.getElementById('outerframe').style.height = height + "px";
-
-    }
-
-</script>
 
 <%@ include file="/netmarkets/jsp/util/end.jspf" %>
