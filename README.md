@@ -1,4 +1,4 @@
-# `Windchill Secondary Development`
+# `Windchill 12.1 Secondary Development`
 
 ## 概述
 
@@ -17,12 +17,13 @@
 ## 开发日志
 
 ### 完成功能
-
+- [x] 自定义任务表单中，增加流程图查看
+- [ ] Windchill 线程池和多线程处理
 
 
 ### 未完成功能
 
-
+- [ ] 选配页面优化
 
 
 
