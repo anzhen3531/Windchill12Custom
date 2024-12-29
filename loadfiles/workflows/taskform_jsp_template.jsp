@@ -198,24 +198,9 @@
                                 </td>
                             </tr>
 
-                            <!-- task completion section -->
-
                             <tr>
                                 <tags:taskPanel propertyModel="${propertyModel}" attrs="workitem_esignature"/>
                             </tr>
-                            <tr>
-                                <td></td>
-                                <td valign="middle" align="left">
-                                        <jsp:include page="/netmarkets/jsp/customtemplates/completeButton.jsp"/>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td valign="middle" colspan="3">
-                                    <hr size="1" width="100%">
-                                </td>
-                            </tr>
-
                         </table>
 
                     </div>
@@ -227,6 +212,10 @@
                 <td class="tableborderbg"><IMG SRC="netmarkets/images/sp.gif" height="1" width="1"></td>
             </tr>
         </table>
+    </div>
+
+    <div class="main-container">
+        <jsp:include page="/netmarkets/jsp/customtemplates/completeButton.jsp"/>
     </div>
 
     <%--  流程地图  --%>

@@ -63,11 +63,11 @@
                 style="float:left;margin-left: 0px;margin-right: 0px"
                 title="{{'ZOOMOUT_BUTTON_TOOLTIP' | translate}}"></button>
     </div>
-
     <div id="ProcessManagerGraph" ng-mousedown="OnMouseDown($event)" ng-mouseup="OnMouseUp($event)"
          ng-mousemove="OnMouseMove($event)" ng-click="graphClicked();" ptc-graph="dataModel" scale="{{graph.scale}}"
          connect="createLink(from, to);"
-         node-template-url="'apps/processmanager/templates/processmanager-graph-node-template.html'" class="graphframe">
+         node-template-url="'apps/processmanager/templates/processmanager-graph-node-template.html'"
+         class="graphframeCustom">
     </div>
 </div>
 </body>

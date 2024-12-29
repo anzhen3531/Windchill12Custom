@@ -51,7 +51,6 @@
 
 <style>
     .rounded-button {
-        margin-right: 20px;
         display: inline-block;
         padding: 10px 20px;
         font-size: 15px;
@@ -63,8 +62,8 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         writing-mode: horizontal-tb; /* 确保文字方向为横向 */
-        text-orientation: mixed;    /* 确保文字始终以标准方向显示 */
-        transform: rotate(0deg);    /* 保证旋转为 0 */
+        text-orientation: mixed; /* 确保文字始终以标准方向显示 */
+        transform: rotate(0deg); /* 保证旋转为 0 */
     }
 
     .rounded-button:hover {
@@ -76,6 +75,26 @@
     .rounded-button:active {
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
         transform: translateY(0);
+    }
+
+    /* 外部容器样式 */
+    .main-container {
+        display: flex;
+        justify-content: flex-start; /* 默认从左开始布局 */
+        align-items: flex-start;    /* 顶部对齐 */
+        position: relative;
+        margin: 30px;
+    }
+
+    /* 按钮容器样式 */
+    .button-container {
+        position: absolute;
+        top: 50%;          /* 垂直方向居中 */
+        left: 75%;         /* 水平方向放在右侧四分之三处 */
+        transform: translateY(-50%); /* 调整垂直方向的对齐 */
+        display: flex;
+        flex-direction: row;
+        gap: 10px;         /* 按钮之间的间距 */
     }
 </style>
 <SCRIPT LANGUAGE="JavaScript">
@@ -292,94 +311,87 @@
 %>
 
 
-<div id="completButtonId">
-    <table class="pp" cellspacing="1" cellpadding="1" height="5">
-        <tr class="basefont" align="right" height="5">
-            <td align="center" height="5">
-                <%
-                    Locale locale = localeBean.getLocale();
-                    response.setCharacterEncoding("UTF-8");
-                    NmHTMLActionModel am = null;
-                    String show = request.getParameter("showAdhocComponent");
-                    if (!myNmWorkItem.isAdhocInProgress()) {
-                        if (myNmWorkItem.isProjectWorkItem() && !myNmWorkItem.isAdhocActivity()) {
-                            am = NmActionServiceHelper.service.getActionModel("update workitem", myNmWorkItem);
-                            NmAction updateTask = (NmAction) am.getActions().get(0);
-                            updateTask.setButton(true);
-                            updateTask.setIcon(null);
-                            updateTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
-                            //boolean adminTrackCostOverride=;
-                            //if (adminTrackCostOverride) updateTask.setEnabled(true);
-                            actionBean.setAction(updateTask);
-                            NmContext context = nmcontext.getContext();
-                            context.pushElement(myNmWorkItem);
-                            NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
-                            context.popElement();
-                            actionBean.setAction(null);
-                        } else {
-                            if (isShow.equals(Boolean.TRUE)) {
-                                am = NmActionServiceHelper.service.getActionModel("save workitem", myNmWorkItem);
-                                NmAction saveTask = (NmAction) am.getActions().get(0);
-                                saveTask.setButton(true);
-                                saveTask.setStyleClass("rounded-button");
-                                saveTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
-                                actionBean.setAction(saveTask);
-                                NmContext context2 = nmcontext.getContext();
-                                context2.pushElement(myNmWorkItem);
-                                NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
-                                context2.popElement();
-                                actionBean.setAction(null);
-                            }
-                        }
-                    }
-                %>
-            </td>
-            <td align="center" height="5">
-                <%
+<div id="completButtonId" class="button-container">
+    <%
+        Locale locale = localeBean.getLocale();
+        response.setCharacterEncoding("UTF-8");
+        NmHTMLActionModel am = null;
+        String show = request.getParameter("showAdhocComponent");
+        if (!myNmWorkItem.isAdhocInProgress()) {
+            if (myNmWorkItem.isProjectWorkItem() && !myNmWorkItem.isAdhocActivity()) {
+                am = NmActionServiceHelper.service.getActionModel("update workitem", myNmWorkItem);
+                NmAction updateTask = (NmAction) am.getActions().get(0);
+                updateTask.setButton(true);
+                updateTask.setIcon(null);
+                updateTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
+                //boolean adminTrackCostOverride=;
+                //if (adminTrackCostOverride) updateTask.setEnabled(true);
+                actionBean.setAction(updateTask);
+                NmContext context = nmcontext.getContext();
+                context.pushElement(myNmWorkItem);
+                NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
+                context.popElement();
+                actionBean.setAction(null);
+            } else {
+                if (isShow.equals(Boolean.TRUE)) {
+                    am = NmActionServiceHelper.service.getActionModel("save workitem", myNmWorkItem);
+                    NmAction saveTask = (NmAction) am.getActions().get(0);
+                    saveTask.setButton(true);
+                    saveTask.setStyleClass("rounded-button");
+                    saveTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
+                    actionBean.setAction(saveTask);
+                    NmContext context2 = nmcontext.getContext();
+                    context2.pushElement(myNmWorkItem);
+                    NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
+                    context2.popElement();
+                    actionBean.setAction(null);
+                }
+            }
+        }
+    %>
+    <%
 
-                    if (!myNmWorkItem.isAdhocActivity() || !(show != null && show.equals("table"))) {
-                        if (myNmWorkItem.isAdhocActivity() && myNmWorkItem.isAdhocInProgress()) {
+        if (!myNmWorkItem.isAdhocActivity() || !(show != null && show.equals("table"))) {
+            if (myNmWorkItem.isAdhocActivity() && myNmWorkItem.isAdhocInProgress()) {
 
-                            out.println(new WTMessage(RESOURCE, worklistResource.AD_HOC_IN_PROGRESS, null).getLocalizedMessage(locale));
-                            out.println("<br></br>");
-                        } else {
-                            if (isShow.equals(Boolean.TRUE)) {
-                                am = NmActionServiceHelper.service.getActionModel("complete workitem", myNmWorkItem);
-                                NmAction completeTask = (NmAction) am.getActions().get(0);
-                                completeTask.setButton(true);
-                                //completeTask.setEnabled(true);
-                                completeTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
-                                actionBean.setAction(completeTask);
-                                completeTask.setStyleClass("rounded-button");
-                                NmContext context = nmcontext.getContext();
-                                context.pushElement(myNmWorkItem);
-                                NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
-                                context.popElement();
-                                actionBean.setAction(null);
-                %>
-                <SCRIPT LANGUAGE="JavaScript">
-                    completeTaskButton = '<%=completeTask.getIdName()%>';
-                    document.getElementById('launchReauthPopup').value = '<%=signFlag%>';
-                    document.getElementById('signFlagValue').value = '<%=signFlag%>';
-                </SCRIPT>
-                <%
-                            }
-                        }
-                    } else {
-                        am = NmActionServiceHelper.service.getActionModel("start Activities", myNmWorkItem);
-                        NmAction startTask = (NmAction) am.getActions().get(0);
-                        startTask.setButton(true);
-                        startTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
-                        actionBean.setAction(startTask);
-                        NmContext context1 = nmcontext.getContext();
-                        context1.pushElement(myNmWorkItem);
-                        NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
-                        context1.popElement();
-                        actionBean.setAction(null);
-                    }
-                %>
-            </td>
-    </table>
+                out.println(new WTMessage(RESOURCE, worklistResource.AD_HOC_IN_PROGRESS, null).getLocalizedMessage(locale));
+                out.println("<br></br>");
+            } else {
+                if (isShow.equals(Boolean.TRUE)) {
+                    am = NmActionServiceHelper.service.getActionModel("complete workitem", myNmWorkItem);
+                    NmAction completeTask = (NmAction) am.getActions().get(0);
+                    completeTask.setButton(true);
+                    //completeTask.setEnabled(true);
+                    completeTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
+                    actionBean.setAction(completeTask);
+                    completeTask.setStyleClass("rounded-button");
+                    NmContext context = nmcontext.getContext();
+                    context.pushElement(myNmWorkItem);
+                    NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
+                    context.popElement();
+                    actionBean.setAction(null);
+    %>
+    <SCRIPT LANGUAGE="JavaScript">
+        completeTaskButton = '<%=completeTask.getIdName()%>';
+        document.getElementById('launchReauthPopup').value = '<%=signFlag%>';
+        document.getElementById('signFlagValue').value = '<%=signFlag%>';
+    </SCRIPT>
+    <%
+                }
+            }
+        } else {
+            am = NmActionServiceHelper.service.getActionModel("start Activities", myNmWorkItem);
+            NmAction startTask = (NmAction) am.getActions().get(0);
+            startTask.setButton(true);
+            startTask.setEnabled((!myNmWorkItem.isCompleted() && !myNmWorkItem.isSuspended() && myNmWorkItem.isMine()));
+            actionBean.setAction(startTask);
+            NmContext context1 = nmcontext.getContext();
+            context1.pushElement(myNmWorkItem);
+            NmAction.actionjsp(actionBean, linkBean, objectBean, localeBean, urlFactoryBean, nmcontext, sessionBean, out, request, response);
+            context1.popElement();
+            actionBean.setAction(null);
+        }
+    %>
 </div>
 <input type="hidden" id="requiredMessage" name="requiredMessage"
        value="<%=WTMessage.getLocalizedMessage(com.ptc.core.ui.errorMessagesRB.class.getName(),com.ptc.core.ui.errorMessagesRB.CREATE_WITHOUT_REQUIRED_FIELDS, null, locale)%>">
