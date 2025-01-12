@@ -2,6 +2,8 @@
 <!DOCTYPE listofactions SYSTEM "customActions.dtd">
 <listofactions>
 
+    CustomNmWorkItemCommands
+
     <objecttype resourceBundle="com.ptc.windchill.enterprise.associativity.part.mpml.mapsb.mapsbActionsRB"
                 name="extAction">
         <!--uiComoponent 判断权限-->
@@ -9,6 +11,13 @@
             <command url="/netmarkets/jsp/ext/ziang/test.jsp"
                      windowType="popup"/>
         </action>
+    </objecttype>
+
+    <objecttype name="work" class="wt.workflow.work.WorkItem">
+        <action name="save" enabledwhensuspended="true" ajax="row" uicomponent="WORKITEM_SAVE">
+            <command class="ext.ziang.workflow.CustomNmWorkItemCommands" method="save" onClick="EnableTextBox()"/>
+        </action>
+
     </objecttype>
 
 </listofactions>

@@ -215,7 +215,7 @@
     </div>
 
     <div class="main-container">
-        <jsp:include page="/netmarkets/jsp/customtemplates/completeButton.jsp"/>
+        <jsp:include page="/netmarkets/jsp/customtemplates/customCompleteButton.jsp"/>
     </div>
 
     <%--  流程地图  --%>
