@@ -28,7 +28,7 @@ import wt.util.WTProperties;
  * @author anzhen
  * @date 2024/02/01
  *       <p/>
- *       ext.ziang.oauth.LdapAuthenticationService
+ *       ext.common.ldap.LdapAuthenticationService
  */
 public class LdapAuthenticationService {
     private static final String LDAP_URL;

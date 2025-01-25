@@ -19,6 +19,7 @@ import wt.util.WTProperties;
 
 /**
  * 配置文件缓存管理器
+ * ext.oauth.config.cache.PropertiesManager
  */
 public class PropertiesManager implements RemoteAccess, Serializable {
     private static final long serialVersionUID = 1L;
