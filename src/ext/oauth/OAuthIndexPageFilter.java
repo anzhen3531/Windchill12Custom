@@ -138,8 +138,8 @@ public class OAuthIndexPageFilter implements Filter {
                 if (!loginSuccess) {
                     redirectBasicLogin(response);
                 }
-                request.removeAttribute(CookieUtils.SSO_AUTH);
-                CookieUtils.deleteSSOTokenByCookie(request, response);
+                // request.removeAttribute(CookieUtils.SSO_AUTH);
+                // CookieUtils.deleteSSOTokenByCookie(request, response);
                 return;
             }
 
@@ -198,7 +198,9 @@ public class OAuthIndexPageFilter implements Filter {
             logger.error("登录成功 用户名{}, 密码{}", username, password);
             if (LdapAuthenticationService.isAuthenticate(username, password)) {
                 logger.error("登录成功 用户名{}, 密码{}", username, password);
-                // 采用其余的登录条件
+                authorization = authorization.replace("Basic ", "");
+                response.addCookie(CookieUtils.createSSOTokenByCookie(authorization, CookieUtils.BASIC_LOGIN));
+                request.getSession().setAttribute(CookieUtils.SSO_AUTH, username);
                 SSORequestWrap ssoRequestWrap = newWrapRequest(request, username, authorization);
                 filterChain.doFilter(ssoRequestWrap, response);
                 return true;
@@ -264,6 +266,10 @@ public class OAuthIndexPageFilter implements Filter {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "用户账号密码错误！");
                 return false;
             }
+        } else {
+            // 当前用户已经使用Basic登录
+            String remoteUser = request.getRemoteUser();
+            System.out.println("remoteUser = " + remoteUser);
         }
         // 发起重定向 重定向到登陆页面
         if (!requestURI.contains(OAuthConfigConstant.OAUTH2_LOGIN_PAGE_FILE)) {
@@ -412,7 +418,6 @@ public class OAuthIndexPageFilter implements Filter {
             logger.error("登录成功 用户名{}, 密码{}", username, password);
             if (LdapAuthenticationService.isAuthenticate(username, password)) {
                 logger.error("登录成功 用户名{}, 密码{}", username, password);
-                // 重定向到首页
                 authorization = authorization.replace("Basic ", "");
                 response.addCookie(CookieUtils.createSSOTokenByCookie(authorization, CookieUtils.BASIC_LOGIN));
                 request.getSession().setAttribute(CookieUtils.SSO_AUTH, username);
