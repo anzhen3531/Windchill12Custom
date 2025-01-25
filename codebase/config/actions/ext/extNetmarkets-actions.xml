@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE listofactions SYSTEM "customActions.dtd">
+<listofactions>
+
+    <objecttype name="work" class="wt.workflow.work.WorkItem">
+        <action name="view" enabledwhensuspended="true">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="view" windowType="page"/>
+        </action>
+        <action name="view_open" enabledwhensuspended="true">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="view" windowType="page"/>
+        </action>
+        <action name="view_complete" enabledwhensuspended="true">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="view" windowType="page"/>
+        </action>
+        <action name="complete" enabledwhensuspended="true" ajax="row" uicomponent="WORKITEM_COMPLETE">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="complete" onClick="completeTaskEnableTextBox()"/>
+        </action>
+        <action name="moreActivities">
+            <command url="servlet/TypeBasedIncludeServlet"/>
+        </action>
+        <action name="update" enabledwhensuspended="true">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="update"/>
+        </action>
+        <action name="save" enabledwhensuspended="true" ajax="row" uicomponent="WORKITEM_SAVE">
+            <command class="ext.ziang.workflow.CustomNmWorkItemCommands" method="save" onClick="EnableTextBox()"/>
+        </action>
+        <action name="startAct" enabledwhensuspended="true" ajax="page">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="startAdhocFromTaskDetails" onClick="validateAdhocActivityAssignee()"/>
+        </action>
+        <action name="reassign" uicomponent="WORKITEM_REASSIGN">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="reassign" windowType="popup"/>
+        </action>
+        <action name="reassign_step" checkaccess="true">
+            <command windowType="wizard_step"/>
+        </action>
+        <action name="reassignSearchUser" checkaccess="true">
+            <command windowType="popup"/>
+        </action>
+        <action name="multireassign" selectRequired="true" multiselect="true" uicomponent="WORKITEM_MULTI_REASSIGN">
+            <includeFilter name="projectM4D"/>
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="multireassign" windowType="popup"/>
+        </action>
+        <action name="updateDeadline" uicomponent="WORKITEM_EDIT_DEADLINE">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="updateDeadline" windowType="popup"/>
+        </action>
+        <action name="accept" ajax="page" uicomponent="WORKITEM_ACCEPT">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="accept"/>
+        </action>
+        <action name="unaccept" ajax="page" uicomponent="WORKITEM_DECLINE">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="unaccept"/>
+        </action>
+        <action name="multiaccept" selectRequired="true" multiselect="true" uicomponent="WORKITEM_MULTI_ACCEPT">
+            <includeFilter name="projectM4D"/>
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="multiaccept"/>
+        </action>
+        <action name="multiunaccept" selectRequired="true" multiselect="true" uicomponent="WORKITEM_MULTI_DECLINE">
+            <includeFilter name="projectM4D"/>
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="multiunaccept"/>
+        </action>
+        <action name="searchWorkItems" enabledwhensuspended="true" uicomponent="GLOBAL_SEARCH">
+            <command class="com.ptc.netmarkets.search.NmSearchCommands" method="" onClick="launchSearchPage(event)" windowType="page"/>
+            <includeFilter name="projectM4D"/>
+        </action>
+        <action name="updateDeadline_step" afterJS="updateDeadline_validateBeforeSubmit">
+            <command windowType="wizard_step"/>
+        </action>
+
+        <action name="workflowTaskbar">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="complete" windowType="page"/>
+        </action>
+
+        <action name="removeUserFromRole" selectRequired="true" multiselect="true">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="removeUserFromRole" onClick="JCAConfirm(event,'com.ptc.netmarkets.util.utilResource.CONFIRM_REMOVE')"/>
+        </action>
+
+        <action name="addUsersToRole">
+            <command class="com.ptc.netmarkets.work.NmWorkItemCommands" method="addUsersToRole" windowType="popup"/>
+        </action>
+
+    </objecttype>
+
+
+
+
+</listofactions>
+
