@@ -113,7 +113,7 @@ public class OAuthIndexPageFilter implements Filter {
             if (StringUtils.isNotBlank(basicToken)) {
                 // 获取登录名称
                 String loginName = getBasicLoginName(basicToken, ssoAuth);
-                if (validateUserExist(loginName)) {
+                if (StringUtils.isNotBlank(loginName)) {
                     logger.debug("当前用户已经登录过Windchill userName{}", loginName);
                     if (StringUtils.isBlank(ssoAuth)) {
                         setCurrentSessionUser(request, loginName);
@@ -284,7 +284,7 @@ public class OAuthIndexPageFilter implements Filter {
             JSONObject requestBody = RequestBodyUtils.getRequestBody(request);
             String username = requestBody.getString("username");
             String password = requestBody.getString("password");
-            String authorization = new BASE64Encoder().encode(String.format("{%s}:{%s}", username, password).getBytes());
+            String authorization = new BASE64Encoder().encode(String.format("%s:%s", username, password).getBytes());
             boolean isSuccess = basicLogin(username, password, request, response, authorization, filterChain);
             if (isSuccess) {
                 return true;
