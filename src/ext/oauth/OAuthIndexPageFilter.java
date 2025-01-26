@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ptc.windchill.uwgm.common.container.OrganizationHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +25,13 @@ import ext.oauth.constant.OAuthConfigConstant;
 import ext.oauth.util.CookieUtils;
 import ext.oauth.util.RequestBodyUtils;
 import ext.oauth.util.SSORequestWrap;
+import wt.org.OrganizationServicesHelper;
+import wt.org.PrincipalHelper;
+import wt.org.WTPrincipal;
 import wt.util.WTException;
 
 /**
- * OAuth 索引页筛选器 ext.oauth.OAuthIndexPageFilter
- *
+ * OAuth 索引页筛选器 ext.oauth.OAuthIndexPageFilter windchill wt.util.jmx.SetLogLevel -ms ext.oauth.OAuthIndexPageFilter ALL
  *
  * @author anzhen
  * @date 2023/12/25
@@ -89,7 +92,7 @@ public class OAuthIndexPageFilter implements Filter {
                     logger.debug("当前用户已经登录过Windchill userName{}", loginName);
                     // 如果Token过期则直接返回为空
                     if (StringUtils.isBlank(ssoAuth)) {
-                        request.getSession().setAttribute(CookieUtils.SSO_AUTH, loginName);
+                        setCurrentSessionUser(request, loginName);
                     }
                     SSORequestWrap SSORequestWrap = newWrapRequest(request, loginName);
                     filterChain.doFilter(SSORequestWrap, response);
@@ -110,10 +113,10 @@ public class OAuthIndexPageFilter implements Filter {
             if (StringUtils.isNotBlank(basicToken)) {
                 // 获取登录名称
                 String loginName = getBasicLoginName(basicToken, ssoAuth);
-                if (StringUtils.isNotBlank(loginName)) {
+                if (validateUserExist(loginName)) {
                     logger.debug("当前用户已经登录过Windchill userName{}", loginName);
                     if (StringUtils.isBlank(ssoAuth)) {
-                        request.getSession().setAttribute(CookieUtils.SSO_AUTH, loginName);
+                        setCurrentSessionUser(request, loginName);
                     }
                     SSORequestWrap ssoRequestWrap = newWrapRequest(request, loginName, basicToken);
                     filterChain.doFilter(ssoRequestWrap, response);
@@ -154,6 +157,30 @@ public class OAuthIndexPageFilter implements Filter {
             return;
         }
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private static void setCurrentSessionUser(HttpServletRequest request, String loginName) {
+        logger.debug("session name {}", loginName);
+        request.getSession().setAttribute(CookieUtils.SSO_AUTH, loginName);
+    }
+
+    /**
+     * 判断用户是否存在系统中
+     * @param userName
+     * @return
+     */
+    private static boolean validateUserExist(String userName) {
+        if (StringUtils.isBlank(userName)){
+            return false;
+        }
+        // 查询用户名是否存在当前系统中 否则直接返回
+        try {
+            WTPrincipal principal = OrganizationServicesHelper.manager.getPrincipal(userName);
+            return Objects.nonNull(principal);
+        } catch (WTException e) {
+            logger.debug("validateExist getPrincipal error", e);
+        }
+        return false;
     }
 
     /**
@@ -200,7 +227,7 @@ public class OAuthIndexPageFilter implements Filter {
                 logger.error("登录成功 用户名{}, 密码{}", username, password);
                 authorization = authorization.replace("Basic ", "");
                 response.addCookie(CookieUtils.createSSOTokenByCookie(authorization, CookieUtils.BASIC_LOGIN));
-                request.getSession().setAttribute(CookieUtils.SSO_AUTH, username);
+                setCurrentSessionUser(request, username);
                 SSORequestWrap ssoRequestWrap = newWrapRequest(request, username, authorization);
                 filterChain.doFilter(ssoRequestWrap, response);
                 return true;
@@ -237,7 +264,7 @@ public class OAuthIndexPageFilter implements Filter {
                 if (StringUtils.isNotBlank(token) && StringUtils.isNotBlank(loginUserName)) {
                     response.addCookie(CookieUtils.createSSOTokenByCookie(token));
                     // 添加Session
-                    request.getSession().setAttribute(CookieUtils.SSO_AUTH, loginUserName);
+                    setCurrentSessionUser(request, loginUserName);
                     SSORequestWrap ssoRequestWrap = new SSORequestWrap(request);
                     filterChain.doFilter(ssoRequestWrap, response);
                     return true;
@@ -257,7 +284,7 @@ public class OAuthIndexPageFilter implements Filter {
             JSONObject requestBody = RequestBodyUtils.getRequestBody(request);
             String username = requestBody.getString("username");
             String password = requestBody.getString("password");
-            String authorization = new BASE64Encoder().encode(String.format("{}:{}", username, password).getBytes());
+            String authorization = new BASE64Encoder().encode(String.format("{%s}:{%s}", username, password).getBytes());
             boolean isSuccess = basicLogin(username, password, request, response, authorization, filterChain);
             if (isSuccess) {
                 return true;
@@ -266,10 +293,6 @@ public class OAuthIndexPageFilter implements Filter {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "用户账号密码错误！");
                 return false;
             }
-        } else {
-            // 当前用户已经使用Basic登录
-            String remoteUser = request.getRemoteUser();
-            System.out.println("remoteUser = " + remoteUser);
         }
         // 发起重定向 重定向到登陆页面
         if (!requestURI.contains(OAuthConfigConstant.OAUTH2_LOGIN_PAGE_FILE)) {
@@ -297,7 +320,11 @@ public class OAuthIndexPageFilter implements Filter {
         } else {
             JSONObject userInfo = GithubOAuthProvider.getUserInfo(cookiesToken);
             logger.debug("userInfo = {}", userInfo);
-            return userInfo.getString("login");
+            String userName = userInfo.getString("login");
+            if (validateUserExist(userName)){
+                return userName;
+            }
+            return null;
         }
     }
 
@@ -420,7 +447,7 @@ public class OAuthIndexPageFilter implements Filter {
                 logger.error("登录成功 用户名{}, 密码{}", username, password);
                 authorization = authorization.replace("Basic ", "");
                 response.addCookie(CookieUtils.createSSOTokenByCookie(authorization, CookieUtils.BASIC_LOGIN));
-                request.getSession().setAttribute(CookieUtils.SSO_AUTH, username);
+                setCurrentSessionUser(request, username);
                 SSORequestWrap ssoRequestWrap = newSSOWrapRequest(request, username);
                 filterChain.doFilter(ssoRequestWrap, response);
                 return true;
