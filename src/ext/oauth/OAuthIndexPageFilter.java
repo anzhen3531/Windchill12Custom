@@ -320,11 +320,7 @@ public class OAuthIndexPageFilter implements Filter {
         } else {
             JSONObject userInfo = GithubOAuthProvider.getUserInfo(cookiesToken);
             logger.debug("userInfo = {}", userInfo);
-            String userName = userInfo.getString("login");
-            if (validateUserExist(userName)){
-                return userName;
-            }
-            return null;
+            return userInfo.getString("login");
         }
     }
 
