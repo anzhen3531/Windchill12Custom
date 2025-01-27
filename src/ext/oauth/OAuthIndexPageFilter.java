@@ -165,25 +165,6 @@ public class OAuthIndexPageFilter implements Filter {
     }
 
     /**
-     * 判断用户是否存在系统中
-     * @param userName
-     * @return
-     */
-    private static boolean validateUserExist(String userName) {
-        if (StringUtils.isBlank(userName)){
-            return false;
-        }
-        // 查询用户名是否存在当前系统中 否则直接返回
-        try {
-            WTPrincipal principal = OrganizationServicesHelper.manager.getPrincipal(userName);
-            return Objects.nonNull(principal);
-        } catch (WTException e) {
-            logger.debug("validateExist getPrincipal error", e);
-        }
-        return false;
-    }
-
-    /**
      * 判断是否是表单登录的
      * 
      * @param request
