@@ -2,6 +2,8 @@
 <!DOCTYPE actionmodels SYSTEM "customActionmodels.dtd">
 <actionmodels>
 
+    <include href="config/actions/ext/extPart-actionModels.xml" />
+
     <model name="folderbrowser_toolbar_actions">
         <description>Folder browser toolbar actions menu for all Folders.</description>
         <submodel name="folderbrowser_toolbar_open_submenu"/>

@@ -6,10 +6,10 @@
     // 需要指定stream id
     ApplicationData applicationData = new ApplicationData();
 
-    applicationData.setStreamData();
-    // 需要设置一个必填属性 ， 电子仓库属性 ，不然无法进行上传
-    PersistenceHelper.manager.save(applicationData);
-    ContentHelper.service.updateAppData()
+//    applicationData.setStreamData();
+//    // 需要设置一个必填属性 ， 电子仓库属性 ，不然无法进行上传
+//    PersistenceHelper.manager.save(applicationData);
+//    ContentHelper.service.updateAppData()
 
 //    QuerySpec qs = new QuerySpec();
 //    int htc = qs.appendClassList(HolderToContent.class, false);

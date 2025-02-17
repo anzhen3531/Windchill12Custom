@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE listofactions SYSTEM "customActions.dtd">
 <listofactions>
+
+    <include href="config/actions/ext/extPart-actions.xml" />
+
     <objecttype resourceBundle="com.ptc.windchill.enterprise.associativity.part.mpml.mapsb.mapsbActionsRB"
                 name="extAction">
         <!--uiComoponent 判断权限-->

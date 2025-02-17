@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE listofactions SYSTEM "customActions.dtd">
+<listofactions>
+    <objecttype resourceBundle="ext.ziang.part.resource.PartRB"
+                name="extPart">
+        <!--uiComoponent 判断权限-->
+        <action name="changeView">
+            <command method="execute" class="ext.ziang.part.changeView.processor.ChangeViewProcessor"
+                     windowType="popup"
+                     url="/netmarkets/jsp/part/newViewVersion.jsp?templateMode=EDIT"/>
+        </action>
+    </objecttype>
+</listofactions>
+

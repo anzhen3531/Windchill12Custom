@@ -1,4 +1,4 @@
-package com.ptc.core.lwc.client.mvc.builders;
+package com.ptc.core.com.ptc.core.lwc.client.mvc.builders;
 
 import com.ptc.core.lwc.client.lwcResource;
 import com.ptc.core.lwc.client.factory.dataUtilities.IbaPickerTreeHandler;
