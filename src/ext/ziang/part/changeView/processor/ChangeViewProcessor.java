@@ -8,6 +8,8 @@ import com.ptc.netmarkets.model.NmOid;
 import com.ptc.netmarkets.util.beans.NmCommandBean;
 import com.ptc.windchill.enterprise.util.PartManagementHelper;
 import ext.common.util.PartUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wt.part.WTPart;
 import wt.pom.Transaction;
 import wt.util.WTException;
@@ -18,6 +20,8 @@ import java.util.List;
  * 创建多视图BOM
  */
 public class ChangeViewProcessor extends DefaultObjectFormProcessor {
+
+    public static final Logger logger = LoggerFactory.getLogger(ChangeViewProcessor.class);
 
     @Override
     public FormResult doOperation(NmCommandBean nmCommandBean, List<ObjectBean> list) throws WTException {
@@ -34,7 +38,7 @@ public class ChangeViewProcessor extends DefaultObjectFormProcessor {
             }
             transaction.commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("转换视图异常 error", e);
             transaction.rollback();
             throw new WTException(e.getLocalizedMessage());
         }
